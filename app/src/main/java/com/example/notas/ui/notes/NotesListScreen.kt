@@ -1,13 +1,13 @@
 package com.example.notas.ui.notes
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.FiniteAnimationSpec
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -16,9 +16,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyItemScope
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
+import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
+import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Note
@@ -57,31 +57,58 @@ fun NotesListScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text(if (showArchived) "Arquivo" else "Notas") },
-                navigationIcon = {
-                    if (showArchived) {
+            if (showArchived) {
+                TopAppBar(
+                    title = { Text("Arquivo") },
+                    navigationIcon = {
                         IconButton(onClick = { viewModel.toggleShowArchived() }) {
-                            Icon(
-                                Icons.AutoMirrored.Filled.ArrowBack,
-                                contentDescription = "Voltar"
-                            )
+                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Voltar")
                         }
                     }
-                },
-                actions = {
-                    IconButton(onClick = { viewModel.toggleShowArchived() }) {
-                        Icon(
-                            if (showArchived) Icons.Default.Unarchive else Icons.Default.Archive,
-                            contentDescription = if (showArchived) "Ver ativas" else "Ver arquivo"
-                        )
-                    }
-                }
-            )
+                )
+            } else {
+
+
+               // Title and Floating Search Bar Header
+               Column(
+                   modifier = Modifier
+                       .fillMaxWidth()
+                       .padding(top = 24.dp, start = 24.dp, end = 24.dp, bottom = 8.dp)
+               ) {
+                   Text(
+                       text = "Nota App",
+                       style = MaterialTheme.typography.headlineLarge.copy(
+                           fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
+                           color = MaterialTheme.colorScheme.onSurface
+                       )
+                   )
+                   Spacer(modifier = Modifier.height(16.dp))
+                   Box(
+                       modifier = Modifier.fillMaxWidth()
+                   ) {
+                       SearchBar(
+                           query = searchQuery,
+                           onQueryChange = { viewModel.updateSearchQuery(it) },
+                           modifier = Modifier.fillMaxWidth()
+                       )
+                       
+                       IconButton(
+                           onClick = { viewModel.toggleShowArchived() },
+                           modifier = Modifier.align(Alignment.CenterEnd).padding(end = 8.dp)
+                       ) {
+                           Icon(Icons.Default.Archive, contentDescription = "Arquivo")
+                       }
+                   }
+               }
+            }
         },
         floatingActionButton = {
             if (!showArchived) {
-                FloatingActionButton(onClick = onCreateNote) {
+                FloatingActionButton(
+                    onClick = onCreateNote,
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                    contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                ) {
                     Icon(Icons.Default.Add, contentDescription = "Nova nota")
                 }
             }
@@ -92,18 +119,8 @@ fun NotesListScreen(
                 .fillMaxSize()
                 .padding(padding)
         ) {
-            if (!showArchived) {
-                SearchBar(
-                    query = searchQuery,
-                    onQueryChange = { viewModel.updateSearchQuery(it) },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp)
-                )
-            }
-
             if (notes.isEmpty()) {
-                EmptyState(
+                 EmptyState(
                     message = if (showArchived)
                         "Nenhuma nota arquivada"
                     else if (searchQuery.isNotBlank())
@@ -113,10 +130,12 @@ fun NotesListScreen(
                     onAction = if (!showArchived && searchQuery.isBlank()) onCreateNote else null
                 )
             } else {
-                LazyColumn(
+                LazyVerticalStaggeredGrid(
+                    columns = StaggeredGridCells.Fixed(2),
                     modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                    contentPadding = PaddingValues(16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    verticalItemSpacing = 12.dp
                 ) {
                     items(
                         items = notes,
@@ -126,12 +145,10 @@ fun NotesListScreen(
                             visible = true,
                             enter = slideInVertically(
                                 initialOffsetY = { it },
-                                animationSpec = tween(durationMillis = 1500)
+                                animationSpec = tween(durationMillis = 500)
                             ) + fadeIn(),
                             exit = fadeOut(),
-                            modifier = Modifier.animateItemPlacement(
-                                animationSpec = tween<IntOffset>(durationMillis = 300)
-                            )
+                            modifier = Modifier.animateItemPlacement()
                         ) {
                             NoteCard(
                                 note = note,

@@ -13,6 +13,7 @@ data class Note(
     val remindAt: Long? = null,
     val pinned: Boolean = false,
     val archived: Boolean = false,
+    val colorInt: Int? = null,
     val createdAt: Long = System.currentTimeMillis(),
     val updatedAt: Long = System.currentTimeMillis()
 )

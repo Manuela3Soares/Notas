@@ -33,7 +33,8 @@ class EditorViewModel(
                         label = note.label ?: "",
                         pinned = note.pinned,
                         archived = note.archived,
-                        remindAt = note.remindAt
+                        remindAt = note.remindAt,
+                        colorInt = note.colorInt
                     )
                 }
             } catch (e: Exception) {
@@ -65,6 +66,10 @@ class EditorViewModel(
         _state.value = _state.value.copy(archived = !_state.value.archived)
     }
 
+    fun updateColor(color: Int?) {
+        _state.value = _state.value.copy(colorInt = color)
+    }
+
 
     suspend fun saveNote(): Result<Unit> {
         val currentState = _state.value
@@ -82,6 +87,7 @@ class EditorViewModel(
                 pinned = currentState.pinned,
                 archived = currentState.archived,
                 remindAt = currentState.remindAt,
+                colorInt = currentState.colorInt,
                 updatedAt = System.currentTimeMillis()
             ) ?: Note(
                 title = currentState.title,
@@ -89,7 +95,8 @@ class EditorViewModel(
                 label = currentState.label.ifBlank { null },
                 pinned = currentState.pinned,
                 archived = currentState.archived,
-                remindAt = currentState.remindAt
+                remindAt = currentState.remindAt,
+                colorInt = currentState.colorInt
             )
 
             if (note.id == 0L) {
@@ -140,6 +147,7 @@ data class EditorState(
     val pinned: Boolean = false,
     val archived: Boolean = false,
     val remindAt: Long? = null,
+    val colorInt: Int? = null,
     val error: String? = null,
     val isLoading: Boolean = false
 )

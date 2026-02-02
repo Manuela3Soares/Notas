@@ -6,11 +6,11 @@ import kotlinx.coroutines.flow.Flow
 
 class NoteRepository(private val noteDao: NoteDao) {
 
-    fun getAllActiveNotes(): Flow<List<Note>> = noteDao.getAllActiveNotes()
+    fun getAllActiveNotes(userId: Long): Flow<List<Note>> = noteDao.getAllActiveNotes(userId)
 
-    fun getArchivedNotes(): Flow<List<Note>> = noteDao.getArchivedNotes()
+    fun getArchivedNotes(userId: Long): Flow<List<Note>> = noteDao.getArchivedNotes(userId)
 
-    fun searchNotes(query: String): Flow<List<Note>> = noteDao.searchNotes(query)
+    fun searchNotes(userId: Long, query: String): Flow<List<Note>> = noteDao.searchNotes(userId, query)
 
     suspend fun getNoteById(id: Long): Note? = noteDao.getNoteById(id)
 

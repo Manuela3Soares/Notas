@@ -14,7 +14,11 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-class NotesViewModel(private val repository: NoteRepository) : ViewModel() {
+class NotesViewModel(
+    private val repository: NoteRepository,
+    private val userId: Long,
+    private val authRepository: com.example.notas.domain.AuthRepository
+) : ViewModel() {
     private val _searchQuery = MutableStateFlow("")
     val searchQuery = _searchQuery.asStateFlow()
 
@@ -29,11 +33,17 @@ class NotesViewModel(private val repository: NoteRepository) : ViewModel() {
         Pair(query, archived)
     }.flatMapLatest { (query, archived) ->
         when {
-            archived -> repository.getArchivedNotes()
-            query.isNotBlank() -> repository.searchNotes(query)
-            else -> repository.getAllActiveNotes()
+            archived -> repository.getArchivedNotes(userId)
+            query.isNotBlank() -> repository.searchNotes(userId, query)
+            else -> repository.getAllActiveNotes(userId)
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    fun logout() {
+        viewModelScope.launch {
+            authRepository.logout()
+        }
+    }
 
     fun updateSearchQuery(query: String) {
         _searchQuery.value = query

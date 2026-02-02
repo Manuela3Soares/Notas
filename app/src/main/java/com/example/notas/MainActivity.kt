@@ -15,10 +15,12 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         val database = AppDatabase.getDatabase(applicationContext)
         val repository = NoteRepository(database.noteDao())
+        val sessionManager = com.example.notas.data.SessionManager(applicationContext)
+        val authRepository = com.example.notas.domain.AuthRepository(database.userDao(), sessionManager)
 
         setContent {
             NotasTheme {
-                App(repository)
+                App(repository, authRepository)
             }
         }
     }

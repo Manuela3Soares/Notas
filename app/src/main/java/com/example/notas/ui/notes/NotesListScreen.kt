@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -21,6 +22,7 @@ import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.automirrored.filled.Note
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Archive
@@ -67,22 +69,32 @@ fun NotesListScreen(
                     }
                 )
             } else {
-
-
                // Title and Floating Search Bar Header
                Column(
                    modifier = Modifier
                        .fillMaxWidth()
                        .padding(top = 24.dp, start = 24.dp, end = 24.dp, bottom = 8.dp)
                ) {
-                   Text(
-                       text = "Nota App",
-                       style = MaterialTheme.typography.headlineLarge.copy(
-                           fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
-                           color = MaterialTheme.colorScheme.onSurface
+                   Row(
+                       modifier = Modifier.fillMaxWidth(),
+                       horizontalArrangement = Arrangement.SpaceBetween,
+                       verticalAlignment = Alignment.CenterVertically
+                   ) {
+                       Text(
+                           text = "Nota App",
+                           style = MaterialTheme.typography.headlineLarge.copy(
+                               fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
+                               color = MaterialTheme.colorScheme.onSurface
+                           )
                        )
-                   )
+                       
+                       IconButton(onClick = { viewModel.logout() }) {
+                           Icon(Icons.AutoMirrored.Filled.Logout, contentDescription = "Sair")
+                       }
+                   }
+                   
                    Spacer(modifier = Modifier.height(16.dp))
+                   
                    Box(
                        modifier = Modifier.fillMaxWidth()
                    ) {

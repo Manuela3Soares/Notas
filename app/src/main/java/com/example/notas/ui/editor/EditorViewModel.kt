@@ -10,7 +10,8 @@ import kotlinx.coroutines.launch
 
 class EditorViewModel(
     private val repository: NoteRepository,
-    private val noteId: Long?
+    private val noteId: Long?,
+    private val userId: Long
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(EditorState())
@@ -90,6 +91,7 @@ class EditorViewModel(
                 colorInt = currentState.colorInt,
                 updatedAt = System.currentTimeMillis()
             ) ?: Note(
+                userId = userId, // Assign current user
                 title = currentState.title,
                 content = currentState.content,
                 label = currentState.label.ifBlank { null },
